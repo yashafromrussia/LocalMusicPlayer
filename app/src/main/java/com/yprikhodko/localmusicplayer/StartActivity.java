@@ -27,6 +27,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -169,6 +170,13 @@ public class StartActivity extends ActionBarActivity
 
             SongAdapter songAdt = new SongAdapter(songList, getActivity());
             songView.setAdapter(songAdt);
+            songView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), new RecyclerItemClickListener.OnItemClickListener(){
+
+                @Override
+                public void onItemClick(View view, int position) {
+                    Toast.makeText(getActivity(), songList.get(position).getTitle(), Toast.LENGTH_LONG).show();
+                }
+            }));
             return rootView;
         }
 
@@ -195,7 +203,6 @@ public class StartActivity extends ActionBarActivity
                         (MediaStore.Audio.Media.ARTIST);
                 int albumColumn = musicCursor.getColumnIndex
                         (MediaStore.Audio.Media.ALBUM_ID);
-
 
                 //add songs to list
                 do {
