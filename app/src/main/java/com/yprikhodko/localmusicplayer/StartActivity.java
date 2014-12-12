@@ -1,32 +1,31 @@
 package com.yprikhodko.localmusicplayer;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
+import android.os.IBinder;
 import android.provider.MediaStore;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.content.Context;
-import android.os.Build;
-import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v4.widget.DrawerLayout;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -47,6 +46,11 @@ public class StartActivity extends ActionBarActivity
      */
     private CharSequence mTitle;
 
+    private ArrayList<Song> songList;
+    private MusicService musicService;
+    private Intent playIntent;
+    private boolean musicBound = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +59,7 @@ public class StartActivity extends ActionBarActivity
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
+        songList = new ArrayList<Song>();
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
@@ -62,13 +67,63 @@ public class StartActivity extends ActionBarActivity
                 (DrawerLayout) findViewById(R.id.drawer_layout));
     }
 
+    //connect to the service
+    private ServiceConnection musicConnection = new ServiceConnection(){
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
+            // Get service
+            musicService = binder.getService();
+            // Pass song list
+            musicService.setSongs(songList);
+            musicBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            musicBound = false;
+        }
+    };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        // Start service when we start the activity
+        if (playIntent == null) {
+            playIntent = new Intent(this, MusicService.class);
+            bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
+            startService(playIntent);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        stopService(playIntent);
+        musicService = null;
+        super.onDestroy();
+    }
+
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                .replace(R.id.container, SongsFragment.newInstance(position + 1))
                 .commit();
+    }
+
+    public ArrayList<Song> getSongs() {
+        return songList;
+    }
+
+    public void setSongs(ArrayList<Song> songList) {
+        this.songList = songList;
+    }
+
+    public MusicService getMusicService() {
+        return musicService;
     }
 
     public void onSectionAttached(int number) {
@@ -123,10 +178,10 @@ public class StartActivity extends ActionBarActivity
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class SongsFragment extends Fragment {
 
-        private ArrayList<Song> songList;
         private RecyclerView songView;
+        private ArrayList<Song> songList;
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -137,15 +192,15 @@ public class StartActivity extends ActionBarActivity
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
+        public static SongsFragment newInstance(int sectionNumber) {
+            SongsFragment fragment = new SongsFragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
             return fragment;
         }
 
-        public PlaceholderFragment() {
+        public SongsFragment() {
         }
 
         @Override
@@ -153,7 +208,8 @@ public class StartActivity extends ActionBarActivity
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_start, container, false);
 
-            songList = new ArrayList<Song>();
+            songList = ((StartActivity) getActivity()).getSongs();
+
             songView = (RecyclerView) rootView.findViewById(R.id.song_list);
             songView.setHasFixedSize(true);
             GridLayoutManager grid = new GridLayoutManager(getActivity(), 2);
@@ -168,13 +224,18 @@ public class StartActivity extends ActionBarActivity
                 }
             });
 
+            ((StartActivity) getActivity()).setSongs(songList);
+
             SongAdapter songAdt = new SongAdapter(songList, getActivity());
             songView.setAdapter(songAdt);
             songView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), new RecyclerItemClickListener.OnItemClickListener(){
 
                 @Override
                 public void onItemClick(View view, int position) {
-                    Toast.makeText(getActivity(), songList.get(position).getTitle(), Toast.LENGTH_LONG).show();
+                    MusicService musicService = ((StartActivity) getActivity()).getMusicService();
+                    musicService.setSong(position);
+                    musicService.playSong();
+                    Toast.makeText(getActivity(), "Playing: " + songList.get(position).getTitle(), Toast.LENGTH_LONG).show();
                 }
             }));
             return rootView;
