@@ -185,7 +185,7 @@ public class StartActivity extends ActionBarActivity
             Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
             Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
 
-            if (musicCursor!=null && musicCursor.moveToFirst()) {
+            if (musicCursor != null && musicCursor.moveToFirst()) {
                 //get columns
                 int titleColumn = musicCursor.getColumnIndex
                         (MediaStore.Audio.Media.TITLE);
