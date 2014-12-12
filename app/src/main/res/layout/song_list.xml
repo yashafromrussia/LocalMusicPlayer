@@ -12,31 +12,38 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:id="@+id/song_art" />
-
-        <TextView
-            android:id="@+id/song_title"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:textSize="24sp"
-            android:layout_marginTop="5dp"
-            android:layout_toRightOf="@+id/song_art"
-            android:textStyle="bold"
-            android:text="dwdwdwdw" />
+            android:id="@+id/song_art"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true" />
 
-        <TextView
-            android:id="@+id/song_artist"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:textSize="18sp"
-            android:layout_below="@+id/song_title"
-            android:layout_alignLeft="@+id/song_title"
-            android:layout_alignStart="@+id/song_title"
-            android:text="dwdwdwd" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@+id/song_art"
+            android:padding="5dp">
+
+            <TextView
+                android:id="@+id/song_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:text="dwdwdwdw"
+                android:singleLine="true"
+                android:ellipsize="marquee" />
+
+            <TextView
+                android:id="@+id/song_artist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:textSize="16sp"
+                android:text="dwdwdwd" />
+        </LinearLayout>
 
     </RelativeLayout>
 </android.support.v7.widget.CardView>

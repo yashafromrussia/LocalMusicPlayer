@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -58,8 +59,6 @@ public class StartActivity extends ActionBarActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
-
-
     }
 
     @Override
@@ -156,9 +155,9 @@ public class StartActivity extends ActionBarActivity
             songList = new ArrayList<Song>();
             songView = (RecyclerView) rootView.findViewById(R.id.song_list);
             songView.setHasFixedSize(true);
-            LinearLayoutManager llm = new LinearLayoutManager(getActivity());
-            llm.setOrientation(LinearLayoutManager.VERTICAL);
-            songView.setLayoutManager(llm);
+            GridLayoutManager grid = new GridLayoutManager(getActivity(), 2);
+            grid.setOrientation(LinearLayoutManager.VERTICAL);
+            songView.setLayoutManager(grid);
 
             getSongList();
             // sort the tracks
