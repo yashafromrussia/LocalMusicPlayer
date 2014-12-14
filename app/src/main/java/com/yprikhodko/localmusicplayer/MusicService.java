@@ -138,7 +138,7 @@ public class MusicService extends Service implements
      * @param songIndex - position of the song in the array
      */
     public void setSong(int songIndex){
-        if (songs.size() <= songIndex) // if the list is empty... just return
+        if (songs.size() <= songIndex || songIndex < 0) // if the list is empty... just return
             return;
         songPos = songIndex;
         playerState = STOPPED;
@@ -167,6 +167,8 @@ public class MusicService extends Service implements
     }
 
     private void playSong() {
+        if (songs.size() <= songPos) // if the list is empty... just return
+            return;
         // Play a song
         player.reset();
         // Get song
