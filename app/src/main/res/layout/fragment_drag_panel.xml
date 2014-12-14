@@ -40,7 +40,8 @@
                     android:text="Medium Text"
                     android:id="@+id/previewSongTitle"
                     android:layout_marginLeft="5dp"
-                    android:singleLine="true" />
+                    android:singleLine="true"
+                    android:textColor="@color/dark"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -50,7 +51,8 @@
                     android:id="@+id/previewSongArtist"
                     android:layout_marginStart="5dp"
                     android:layout_marginTop="5dp"
-                    android:singleLine="true" />
+                    android:singleLine="true"
+                    android:textColor="@color/dark"/>
             </LinearLayout>
 
             <IconTextView

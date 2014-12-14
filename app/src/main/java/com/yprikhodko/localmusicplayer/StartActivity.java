@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
@@ -96,10 +97,10 @@ public class StartActivity extends ActionBarActivity
                     panelExpanded = false;
                     transition.startTransition(300);
                     previewArtworkView.setVisibility(View.VISIBLE);
-                    previewSongArtist.setVisibility(View.VISIBLE);
-                    previewSongTitle.setVisibility(View.VISIBLE);
                     previewPlayBtn.setVisibility(View.VISIBLE);
                     backBtn.setVisibility(View.INVISIBLE);
+                    previewSongTitle.setTextColor(getResources().getColor(R.color.dark));
+                    previewSongArtist.setTextColor(getResources().getColor(R.color.dark));
                 }
             }
 
@@ -110,10 +111,10 @@ public class StartActivity extends ActionBarActivity
                     panelExpanded = true;
                     transition.reverseTransition(300);
                     previewArtworkView.setVisibility(View.INVISIBLE);
-                    previewSongArtist.setVisibility(View.INVISIBLE);
-                    previewSongTitle.setVisibility(View.INVISIBLE);
                     previewPlayBtn.setVisibility(View.INVISIBLE);
                     backBtn.setVisibility(View.VISIBLE);
+                    previewSongTitle.setTextColor(Color.WHITE);
+                    previewSongArtist.setTextColor(Color.WHITE);
                 }
             }
 
