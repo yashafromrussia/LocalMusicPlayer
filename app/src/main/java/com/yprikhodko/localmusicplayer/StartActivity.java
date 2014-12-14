@@ -10,7 +10,6 @@ import android.graphics.Matrix;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.provider.MediaStore;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -20,7 +19,6 @@ import android.support.v8.renderscript.Allocation;
 import android.support.v8.renderscript.Element;
 import android.support.v8.renderscript.RenderScript;
 import android.support.v8.renderscript.ScriptIntrinsicBlur;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -57,6 +55,8 @@ public class StartActivity extends ActionBarActivity
     private SongsFragment currentFragment;
     private FloatingActionButton fab;
     private SeekBar seekBar;
+    private TextView currentPosition;
+    private TextView totalDuration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,13 +77,15 @@ public class StartActivity extends ActionBarActivity
 
         fab = (FloatingActionButton) findViewById(R.id.playBtn);
         fab.setImageDrawable(new IconDrawable(this, Iconify.IconValue.fa_play)
-                .colorRes(R.color.white));
+                .colorRes(R.color.dark));
 
         IconTextView previewPlayBtn = (IconTextView) findViewById(R.id.previewPlayBtn);
         previewPlayBtn.setOnClickListener(togglePlayBtn);
         fab.setOnClickListener(togglePlayBtn);
 
         seekBar = (SeekBar) findViewById(R.id.seekBar);
+        currentPosition = (TextView) findViewById(R.id.currentPosition);
+        totalDuration = (TextView) findViewById(R.id.totalDuration);
 
         // Set our background animation
         final SlidingUpPanelLayout slidingUpPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
@@ -155,7 +157,7 @@ public class StartActivity extends ActionBarActivity
             musicService = binder.getService();
             // Pass song list
             musicService.setSongs(songList);
-            musicService.setSeekBar(seekBar);
+            musicService.setUIControls(seekBar, currentPosition, totalDuration);
             musicBound = true;
 
             // Initialize interfaces
@@ -191,12 +193,12 @@ public class StartActivity extends ActionBarActivity
                         case MusicService.PLAYING:
                             previewPlayBtn.setText("{fa-pause}");
                             fab.setImageDrawable(new IconDrawable(getApplicationContext(), Iconify.IconValue.fa_pause)
-                                    .colorRes(R.color.white));
+                                    .colorRes(R.color.dark));
                             break;
                         case MusicService.PAUSED:
                             previewPlayBtn.setText("{fa-play}");
                             fab.setImageDrawable(new IconDrawable(getApplicationContext(), Iconify.IconValue.fa_play)
-                                    .colorRes(R.color.white));
+                                    .colorRes(R.color.dark));
                             break;
                     }
                 }

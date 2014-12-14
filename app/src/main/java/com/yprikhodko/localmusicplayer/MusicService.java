@@ -12,8 +12,10 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Responsible for music playback. This is the main controller that handles all user actions
@@ -38,6 +40,8 @@ public class MusicService extends Service implements
     public static final int PLAYING = 2;
     private int playerState = STOPPED;
     private SeekBar mSeekBar;
+    private TextView mCurrentPosition;
+    private TextView mTotalDuration;
     private int mInterval = 1000;
 
     // Async thread to update progress bar every second
@@ -112,8 +116,16 @@ public class MusicService extends Service implements
     public void onPrepared(MediaPlayer mp) {
         // Start playback
         mp.start();
-        mSeekBar.setMax(mp.getDuration());
+        int duration = mp.getDuration();
+        mSeekBar.setMax(duration);
         mSeekBar.postDelayed(mProgressRunner, mInterval);
+
+        // Set our duration text view to display total duration in format 0:00
+        mTotalDuration.setText(String.format("%d:%02d",
+                TimeUnit.MILLISECONDS.toMinutes(duration),
+                TimeUnit.MILLISECONDS.toSeconds(duration) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration))
+        ));
     }
 
 
@@ -183,9 +195,10 @@ public class MusicService extends Service implements
      * Sets seekBar to control while playing music
      * @param seekBar - Seek bar instance that's already on our UI thread
      */
-    public void setSeekBar(SeekBar seekBar) {
+    public void setUIControls(SeekBar seekBar, TextView currentPosition, TextView totalDuration) {
         mSeekBar = seekBar;
-
+        mCurrentPosition = currentPosition;
+        mTotalDuration = totalDuration;
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -193,6 +206,13 @@ public class MusicService extends Service implements
                     // Change current position of the song playback
                     player.seekTo(progress);
                 }
+
+                // Update our textView to display the correct number of second in format 0:00
+                mCurrentPosition.setText(String.format("%d:%02d",
+                        TimeUnit.MILLISECONDS.toMinutes(progress),
+                        TimeUnit.MILLISECONDS.toSeconds(progress) -
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(progress))
+                ));
             }
 
             @Override
