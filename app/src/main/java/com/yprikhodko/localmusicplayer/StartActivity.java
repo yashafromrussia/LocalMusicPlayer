@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.IconTextView;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.joanzapata.android.iconify.IconDrawable;
@@ -54,6 +55,8 @@ public class StartActivity extends ActionBarActivity
     private Intent playIntent;
     private boolean musicBound = false;
     private SongsFragment currentFragment;
+    private FloatingActionButton fab;
+    private SeekBar seekBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,17 +75,15 @@ public class StartActivity extends ActionBarActivity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.playBtn);
-        fab.setImageDrawable(new IconDrawable(this, Iconify.IconValue.fa_play_circle)
+        fab = (FloatingActionButton) findViewById(R.id.playBtn);
+        fab.setImageDrawable(new IconDrawable(this, Iconify.IconValue.fa_play)
                 .colorRes(R.color.white));
 
         IconTextView previewPlayBtn = (IconTextView) findViewById(R.id.previewPlayBtn);
-        previewPlayBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                musicService.togglePlay();
-            }
-        });
+        previewPlayBtn.setOnClickListener(togglePlayBtn);
+        fab.setOnClickListener(togglePlayBtn);
+
+        seekBar = (SeekBar) findViewById(R.id.seekBar);
 
         // Set our background animation
         final SlidingUpPanelLayout slidingUpPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
@@ -135,6 +136,15 @@ public class StartActivity extends ActionBarActivity
         });
     }
 
+
+    // Play/pause the song on click
+    private View.OnClickListener togglePlayBtn = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            musicService.togglePlay();
+        }
+    };
+
     // Connect to the service
     private ServiceConnection musicConnection = new ServiceConnection() {
 
@@ -145,6 +155,7 @@ public class StartActivity extends ActionBarActivity
             musicService = binder.getService();
             // Pass song list
             musicService.setSongs(songList);
+            musicService.setSeekBar(seekBar);
             musicBound = true;
 
             // Initialize interfaces
@@ -179,9 +190,13 @@ public class StartActivity extends ActionBarActivity
                     switch(status) {
                         case MusicService.PLAYING:
                             previewPlayBtn.setText("{fa-pause}");
+                            fab.setImageDrawable(new IconDrawable(getApplicationContext(), Iconify.IconValue.fa_pause)
+                                    .colorRes(R.color.white));
                             break;
                         case MusicService.PAUSED:
                             previewPlayBtn.setText("{fa-play}");
+                            fab.setImageDrawable(new IconDrawable(getApplicationContext(), Iconify.IconValue.fa_play)
+                                    .colorRes(R.color.white));
                             break;
                     }
                 }

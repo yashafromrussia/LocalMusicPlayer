@@ -7,9 +7,11 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
+import android.widget.SeekBar;
 
 import java.util.ArrayList;
 
@@ -34,6 +36,22 @@ public class MusicService extends Service implements
     public static final int PAUSED = 1;
     public static final int PLAYING = 2;
     private int playerState = STOPPED;
+    private SeekBar mSeekBar;
+    private int mInterval = 1000;
+
+    // Async thread to update progress bar every second
+    private Runnable mProgressRunner = new Runnable() {
+        @Override
+        public void run() {
+        if (mSeekBar != null) {
+            mSeekBar.setProgress(player.getCurrentPosition());
+
+            if(player.isPlaying()) {
+                mSeekBar.postDelayed(mProgressRunner, mInterval);
+            }
+        }
+        }
+    };
 
     public void onCreate(){
         // Create the service
@@ -93,6 +111,8 @@ public class MusicService extends Service implements
     public void onPrepared(MediaPlayer mp) {
         // Start playback
         mp.start();
+        mSeekBar.setMax(mp.getDuration());
+        mSeekBar.postDelayed(mProgressRunner, mInterval);
     }
 
 
@@ -113,10 +133,12 @@ public class MusicService extends Service implements
             case PAUSED:
                 player.start();
                 onSongChangedListener.onPlayerStatusChanged(playerState = PLAYING);
+                mProgressRunner.run();
                 break;
             case PLAYING:
                 player.pause();
                 onSongChangedListener.onPlayerStatusChanged(playerState = PAUSED);
+                mSeekBar.removeCallbacks(mProgressRunner);
                 break;
         }
     }
@@ -138,6 +160,7 @@ public class MusicService extends Service implements
         }
 
         player.prepareAsync();
+        mProgressRunner.run();
         onSongChangedListener.onPlayerStatusChanged(playerState = PLAYING);
     }
 
@@ -150,7 +173,23 @@ public class MusicService extends Service implements
         onSongChangedListener = listener;
     }
 
-    public Song getCurrentSong() {
-        return songs.get(songPos);
+    public void setSeekBar(SeekBar seekBar) {
+        mSeekBar = seekBar;
+
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    // Change current position of the song playback
+                    player.seekTo(progress);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
     }
 }
