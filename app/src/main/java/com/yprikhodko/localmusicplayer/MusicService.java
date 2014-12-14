@@ -28,6 +28,7 @@ public class MusicService extends Service implements
     private int songPos;
     // Our binder
     private final IBinder musicBind = new MusicBinder();
+    private OnSongChangedListener onSongChangedListener;
 
     public void onCreate(){
         // Create the service
@@ -110,5 +111,14 @@ public class MusicService extends Service implements
         }
 
         player.prepareAsync();
+        onSongChangedListener.onSongChanged(playSong);
+    }
+
+    public interface OnSongChangedListener {
+        public void onSongChanged(Song song);
+    }
+    // Sets a callback to execute when we switch songs.. ie: update UI
+    public void setOnSongChangedListener(OnSongChangedListener listener) {
+        onSongChangedListener = listener;
     }
 }
