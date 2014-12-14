@@ -96,8 +96,9 @@ public class SongsFragment extends Fragment {
     public void getSongList() {
         //retrieve song info
         ContentResolver musicResolver = getActivity().getContentResolver();
+        String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
+        Cursor musicCursor = musicResolver.query(musicUri, null, selection, null, null);
 
         if (musicCursor != null && musicCursor.moveToFirst()) {
             //get columns

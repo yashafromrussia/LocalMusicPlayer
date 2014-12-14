@@ -138,6 +138,8 @@ public class MusicService extends Service implements
      * @param songIndex - position of the song in the array
      */
     public void setSong(int songIndex){
+        if (songs.size() <= songIndex) // if the list is empty... just return
+            return;
         songPos = songIndex;
         playerState = STOPPED;
         onSongChangedListener.onSongChanged(songs.get(songPos));
