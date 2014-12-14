@@ -30,6 +30,11 @@ public class MusicService extends Service implements
     private final IBinder musicBind = new MusicBinder();
     private OnSongChangedListener onSongChangedListener;
 
+    public static final int STOPPED = 0;
+    public static final int PAUSED = 1;
+    public static final int PLAYING = 2;
+    private int playerState = STOPPED;
+
     public void onCreate(){
         // Create the service
         super.onCreate();
@@ -93,10 +98,30 @@ public class MusicService extends Service implements
 
     public void setSong(int songIndex){
         songPos = songIndex;
+        playerState = STOPPED;
         onSongChangedListener.onSongChanged(songs.get(songPos));
     }
 
-    public void playSong(){
+    /**
+     * Toggles on/off song playback
+     */
+    public void togglePlay() {
+        switch(playerState) {
+            case STOPPED:
+                playSong();
+                break;
+            case PAUSED:
+                player.start();
+                onSongChangedListener.onPlayerStatusChanged(playerState = PLAYING);
+                break;
+            case PLAYING:
+                player.pause();
+                onSongChangedListener.onPlayerStatusChanged(playerState = PAUSED);
+                break;
+        }
+    }
+
+    private void playSong() {
         // Play a song
         player.reset();
         // Get song
@@ -113,10 +138,12 @@ public class MusicService extends Service implements
         }
 
         player.prepareAsync();
+        onSongChangedListener.onPlayerStatusChanged(playerState = PLAYING);
     }
 
     public interface OnSongChangedListener {
         public void onSongChanged(Song song);
+        public void onPlayerStatusChanged(int status);
     }
     // Sets a callback to execute when we switch songs.. ie: update UI
     public void setOnSongChangedListener(OnSongChangedListener listener) {

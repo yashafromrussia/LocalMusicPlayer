@@ -24,6 +24,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.IconTextView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -74,6 +75,14 @@ public class StartActivity extends ActionBarActivity
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.playBtn);
         fab.setImageDrawable(new IconDrawable(this, Iconify.IconValue.fa_play_circle)
                 .colorRes(R.color.white));
+
+        IconTextView previewPlayBtn = (IconTextView) findViewById(R.id.previewPlayBtn);
+        previewPlayBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                musicService.togglePlay();
+            }
+        });
 
         // Set our background animation
         final SlidingUpPanelLayout slidingUpPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
@@ -144,6 +153,7 @@ public class StartActivity extends ActionBarActivity
                 ImageView previewArtworkView = (ImageView) findViewById(R.id.previewArtwork);
                 TextView previewSongTitle = (TextView) findViewById(R.id.previewSongTitle);
                 TextView previewSongArtist = (TextView) findViewById(R.id.previewSongArtist);
+                IconTextView previewPlayBtn = (IconTextView) findViewById(R.id.previewPlayBtn);
                 @Override
                 public void onSongChanged(Song song) {
                     Bitmap bitmap;
@@ -162,6 +172,18 @@ public class StartActivity extends ActionBarActivity
                     matrix.postScale(3f, 3f);
                     blurredBitmap = Bitmap.createBitmap(blurredBitmap, 0, 0, blurredBitmap.getWidth(), blurredBitmap.getHeight(), matrix, true);
                     ((ImageView) findViewById(R.id.playerBg)).setImageBitmap(blurredBitmap);
+                }
+
+                @Override
+                public void onPlayerStatusChanged(int status) {
+                    switch(status) {
+                        case MusicService.PLAYING:
+                            previewPlayBtn.setText("{fa-pause}");
+                            break;
+                        case MusicService.PAUSED:
+                            previewPlayBtn.setText("{fa-play}");
+                            break;
+                    }
                 }
             });
 

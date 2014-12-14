@@ -81,8 +81,7 @@ public class SongsFragment extends Fragment {
             public void onItemClick(View view, int position) {
                 MusicService musicService = ((StartActivity) getActivity()).getMusicService();
                 musicService.setSong(position);
-                musicService.playSong();
-                Toast.makeText(getActivity(), "Playing: " + songList.get(position).getTitle(), Toast.LENGTH_LONG).show();
+                musicService.togglePlay();
             }
         }));
 
