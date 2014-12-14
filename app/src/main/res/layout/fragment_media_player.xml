@@ -47,15 +47,6 @@
                 android:thumbTint="@color/white"
                 android:progressTint="@color/white" />
 
-            <com.shamanland.fab.FloatingActionButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/playBtn"
-                app:floatingActionButtonColor="@color/white"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="10dp" />
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -79,8 +70,56 @@
                 android:layout_alignParentEnd="true"
                 android:layout_marginRight="5dp"
                 android:textColor="@color/white" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_alignParentBottom="true"
+                android:gravity="center|bottom">
+
+                <IconTextView
+                    android:text="{fa-chevron-left}"
+                    android:shadowColor="#22000000"
+                    android:shadowDx="3"
+                    android:shadowDy="3"
+                    android:shadowRadius="1"
+                    android:textSize="40sp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/prevBtn"
+                    android:textColor="@color/white"
+                    android:layout_gravity="center_vertical" />
+
+                <com.shamanland.fab.FloatingActionButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/playBtn"
+                    app:floatingActionButtonColor="@color/white"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp" />
+
+                <IconTextView
+                    android:text="{fa-chevron-right}"
+                    android:shadowColor="#22000000"
+                    android:shadowDx="3"
+                    android:shadowDy="3"
+                    android:shadowRadius="1"
+                    android:textSize="40sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/nextBtn"
+                    android:textColor="@color/white"
+                    android:visibility="visible"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_gravity="center_vertical" />
+            </LinearLayout>
         </RelativeLayout>
-        </FrameLayout>
+    </FrameLayout>
 
 
 </RelativeLayout>

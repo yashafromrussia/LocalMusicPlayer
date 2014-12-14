@@ -87,6 +87,35 @@ public class StartActivity extends ActionBarActivity
         currentPosition = (TextView) findViewById(R.id.currentPosition);
         totalDuration = (TextView) findViewById(R.id.totalDuration);
 
+        // Set up previous and next buttons
+        IconTextView prevBtn = (IconTextView) findViewById(R.id.prevBtn);
+        IconTextView nextBtn = (IconTextView) findViewById(R.id.nextBtn);
+        prevBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int current = musicService.getCurrentIndex();
+                int previous = current - 1;
+                // If current was 0, then play the last song in the list
+                if (previous < 0)
+                    previous = songList.size() - 1;
+                musicService.setSong(previous);
+                musicService.togglePlay();
+            }
+        });
+
+        nextBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int current = musicService.getCurrentIndex();
+                int next = current + 1;
+                // If current was the last song, then play the first song in the list
+                if (next == songList.size())
+                    next = 0;
+                musicService.setSong(next);
+                musicService.togglePlay();
+            }
+        });
+
         // Set our background animation
         final SlidingUpPanelLayout slidingUpPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
         View dragPanel = findViewById(R.id.dragPanel);

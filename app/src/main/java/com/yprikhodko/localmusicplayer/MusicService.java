@@ -222,4 +222,8 @@ public class MusicService extends Service implements
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
     }
+
+    public int getCurrentIndex() {
+        return songPos;
+    }
 }
