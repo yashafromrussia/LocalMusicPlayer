@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">LocalMusicPlayer</string>
+    <string name="app_name">Local Music Player</string>
     <string name="title_section1">Songs</string>
     <string name="title_section2">Albums</string>
     <string name="title_section3">Artists</string>

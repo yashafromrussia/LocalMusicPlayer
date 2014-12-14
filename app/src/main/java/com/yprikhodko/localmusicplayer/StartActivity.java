@@ -11,8 +11,6 @@ import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.support.v8.renderscript.Allocation;
@@ -35,18 +33,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import java.util.ArrayList;
 
 
-public class StartActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
-
-    /**
-     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
-     */
-    private NavigationDrawerFragment mNavigationDrawerFragment;
-
-    /**
-     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
-     */
-    private CharSequence mTitle;
+public class StartActivity extends ActionBarActivity {
 
     private ArrayList<Song> songList;
     private MusicService musicService;
@@ -65,15 +52,14 @@ public class StartActivity extends ActionBarActivity
 
         setSupportActionBar((Toolbar) findViewById(R.id.main_toolbar));
 
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
-        songList = new ArrayList<Song>();
+        // update the main content by replacing fragments
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        currentFragment = SongsFragment.newInstance(1);
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, currentFragment)
+                .commit();
 
-        // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
+        songList = new ArrayList<Song>();
 
         fab = (FloatingActionButton) findViewById(R.id.playBtn);
         fab.setImageDrawable(new IconDrawable(this, Iconify.IconValue.fa_play)
@@ -279,16 +265,6 @@ public class StartActivity extends ActionBarActivity
         super.onDestroy();
     }
 
-    @Override
-    public void onNavigationDrawerItemSelected(int position) {
-        // update the main content by replacing fragments
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        currentFragment = SongsFragment.newInstance(position + 1);
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, currentFragment)
-                .commit();
-    }
-
     public ArrayList<Song> getSongs() {
         return songList;
     }
@@ -301,37 +277,8 @@ public class StartActivity extends ActionBarActivity
         return musicService;
     }
 
-    public void onSectionAttached(int number) {
-        switch (number) {
-            case 1:
-                mTitle = getString(R.string.title_section1);
-                break;
-            case 2:
-                mTitle = getString(R.string.title_section2);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_section3);
-                break;
-        }
-    }
-
-    public void restoreActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
-    }
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!mNavigationDrawerFragment.isDrawerOpen()) {
-            // Only show items in the action bar relevant to this screen
-            // if the drawer is not showing. Otherwise, let the drawer
-            // decide what to show in the action bar.
-            getMenuInflater().inflate(R.menu.start, menu);
-            restoreActionBar();
-            return true;
-        }
         return super.onCreateOptionsMenu(menu);
     }
 
