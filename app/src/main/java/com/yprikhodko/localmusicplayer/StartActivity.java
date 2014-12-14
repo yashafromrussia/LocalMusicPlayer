@@ -73,6 +73,7 @@ public class StartActivity extends ActionBarActivity
         fab.setImageDrawable(new IconDrawable(this, Iconify.IconValue.fa_play_circle)
                 .colorRes(R.color.white));
 
+        // Set our background animation
         final SlidingUpPanelLayout slidingUpPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
         View dragPanel = findViewById(R.id.dragPanel);
         final TransitionDrawable transition = (TransitionDrawable) dragPanel.getBackground();
@@ -80,12 +81,11 @@ public class StartActivity extends ActionBarActivity
         slidingUpPanel.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             Boolean panelExpanded = false;
             @Override
-            public void onPanelSlide(View view, float v) {
-
-            }
+            public void onPanelSlide(View view, float v) {}
 
             @Override
             public void onPanelCollapsed(View view) {
+                // Animate background back to grey
                 if (panelExpanded) {
                     panelExpanded = false;
                     transition.startTransition(300);
@@ -94,6 +94,7 @@ public class StartActivity extends ActionBarActivity
 
             @Override
             public void onPanelExpanded(View view) {
+                // Animate background to glass
                 if (!panelExpanded) {
                     panelExpanded = true;
                     transition.reverseTransition(300);
@@ -101,14 +102,10 @@ public class StartActivity extends ActionBarActivity
             }
 
             @Override
-            public void onPanelAnchored(View view) {
-
-            }
+            public void onPanelAnchored(View view) {}
 
             @Override
-            public void onPanelHidden(View view) {
-
-            }
+            public void onPanelHidden(View view) {}
         });
     }
 
