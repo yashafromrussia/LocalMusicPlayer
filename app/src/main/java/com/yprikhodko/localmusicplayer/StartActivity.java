@@ -164,6 +164,8 @@ public class StartActivity extends ActionBarActivity
                     ((ImageView) findViewById(R.id.playerBg)).setImageBitmap(blurredBitmap);
                 }
             });
+
+            musicService.setSong(0);
         }
 
         @Override

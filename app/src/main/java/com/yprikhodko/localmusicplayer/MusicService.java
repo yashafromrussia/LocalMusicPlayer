@@ -93,6 +93,7 @@ public class MusicService extends Service implements
 
     public void setSong(int songIndex){
         songPos = songIndex;
+        onSongChangedListener.onSongChanged(songs.get(songPos));
     }
 
     public void playSong(){
@@ -112,7 +113,6 @@ public class MusicService extends Service implements
         }
 
         player.prepareAsync();
-        onSongChangedListener.onSongChanged(playSong);
     }
 
     public interface OnSongChangedListener {
