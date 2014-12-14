@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Local Music Player</string>
+    <string name="no_music">You don\'t have any music downloaded on your phone.</string>
 </resources>

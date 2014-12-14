@@ -175,6 +175,10 @@ public class StartActivity extends ActionBarActivity {
             musicService.setUIControls(seekBar, currentPosition, totalDuration);
             musicBound = true;
 
+            // If we don't have any songs on SD, tell the user about that
+            if (songList.size() == 0)
+                findViewById(R.id.no_music).setVisibility(View.VISIBLE);
+
             // Initialize interfaces
             musicService.setOnSongChangedListener(new MusicService.OnSongChangedListener() {
                 ImageView artworkView = (ImageView) findViewById(R.id.playerArtwork);
