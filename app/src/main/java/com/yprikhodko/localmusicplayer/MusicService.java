@@ -69,6 +69,7 @@ public class MusicService extends Service implements
     public boolean onUnbind(Intent intent) {
         // Stop media player
         player.stop();
+        player.reset();
         player.release();
         return false;
     }

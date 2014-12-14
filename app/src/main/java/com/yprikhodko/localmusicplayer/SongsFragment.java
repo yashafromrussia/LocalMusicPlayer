@@ -103,6 +103,7 @@ public class SongsFragment extends Fragment {
 
     public void setOnSongChangedListener() {
         MusicService musicService = ((StartActivity) getActivity()).getMusicService();
+        final SongsFragment fragmentReference = this;
         musicService.setOnSongChangedListener(new MusicService.OnSongChangedListener() {
             @Override
             public void onSongChanged(Song song) {
@@ -114,21 +115,11 @@ public class SongsFragment extends Fragment {
 
                     Bitmap blurredBitmap = bitmap.copy(bitmap.getConfig(), true);
 
-//                    getActivity().findViewById(R.id.player).setBackgroundColor(palette.getLightMutedColor(R.color.accent_material_dark));
+                    fragmentReference.applyBlur(25f, blurredBitmap);
 
-                    RenderScript rs = RenderScript.create(getActivity());
-                    //this will blur the bitmap with a radius of 8 and save it in bitmap
-                    final Allocation input = Allocation.createFromBitmap(rs, blurredBitmap); //use this constructor for best performance, because it uses USAGE_SHARED mode which reuses memory
-                    final Allocation output = Allocation.createTyped(rs, input.getType());
-                    final ScriptIntrinsicBlur script = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
-                    script.setRadius(25f);
-                    script.setInput(input);
-                    script.forEach(output);
-                    output.copyTo(blurredBitmap);
-
-                    // create a matrix for the manipulation
+                    // Scale the bitmap
                     Matrix matrix = new Matrix();
-                    matrix.postScale(5f, 5f);
+                    matrix.postScale(3f, 3f);
                     blurredBitmap = Bitmap.createBitmap(blurredBitmap, 0, 0, blurredBitmap.getWidth(), blurredBitmap.getHeight(), matrix, true);
                     ((ImageView) getActivity().findViewById(R.id.playerBg)).setImageBitmap(blurredBitmap);
                 } catch (Exception e) {
@@ -136,6 +127,22 @@ public class SongsFragment extends Fragment {
                 }
             }
         });
+    }
+
+    /**
+     * Applies blur using RenderScript for better performance
+     * @param radius - blur radius to apply
+     */
+    private void applyBlur(float radius, Bitmap bitmap) {
+        RenderScript rs = RenderScript.create(getActivity());
+        // Use this constructor for best performance, because it uses USAGE_SHARED mode which reuses memory
+        final Allocation input = Allocation.createFromBitmap(rs, bitmap);
+        final Allocation output = Allocation.createTyped(rs, input.getType());
+        final ScriptIntrinsicBlur script = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
+        script.setRadius(radius);
+        script.setInput(input);
+        script.forEach(output);
+        output.copyTo(bitmap);
     }
 
     @Override

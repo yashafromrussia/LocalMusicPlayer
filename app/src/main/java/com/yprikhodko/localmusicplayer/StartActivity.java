@@ -88,7 +88,9 @@ public class StartActivity extends ActionBarActivity
     @Override
     protected void onDestroy() {
         stopService(playIntent);
-        musicService = null;
+        if (musicBound) {
+            unbindService(musicConnection);
+        }
         super.onDestroy();
     }
 

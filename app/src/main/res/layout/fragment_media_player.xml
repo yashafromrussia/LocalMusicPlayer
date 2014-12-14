@@ -16,7 +16,8 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:id="@+id/playerBg"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            android:tint="@color/dark_transparency" />
 
         <ImageView
             android:layout_width="fill_parent"
