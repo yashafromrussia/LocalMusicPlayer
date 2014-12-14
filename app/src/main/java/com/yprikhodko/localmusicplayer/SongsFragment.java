@@ -4,10 +4,6 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
-import android.support.v8.renderscript.*;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -15,16 +11,12 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.joanzapata.android.iconify.IconDrawable;
-import com.joanzapata.android.iconify.Iconify;
-import com.shamanland.fab.FloatingActionButton;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -94,55 +86,7 @@ public class SongsFragment extends Fragment {
             }
         }));
 
-        FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.playBtn);
-        fab.setImageDrawable(new IconDrawable(getActivity(), Iconify.IconValue.fa_play_circle)
-                .colorRes(R.color.white));
-
         return rootView;
-    }
-
-    public void setOnSongChangedListener() {
-        MusicService musicService = ((StartActivity) getActivity()).getMusicService();
-        final SongsFragment fragmentReference = this;
-        musicService.setOnSongChangedListener(new MusicService.OnSongChangedListener() {
-            @Override
-            public void onSongChanged(Song song) {
-                Bitmap bitmap;
-                ImageView artworkView = (ImageView) getActivity().findViewById(R.id.playerArtwork);
-                try {
-                    bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), song.getArtwork());
-                    artworkView.setImageBitmap(bitmap);
-
-                    Bitmap blurredBitmap = bitmap.copy(bitmap.getConfig(), true);
-
-                    fragmentReference.applyBlur(25f, blurredBitmap);
-
-                    // Scale the bitmap
-                    Matrix matrix = new Matrix();
-                    matrix.postScale(3f, 3f);
-                    blurredBitmap = Bitmap.createBitmap(blurredBitmap, 0, 0, blurredBitmap.getWidth(), blurredBitmap.getHeight(), matrix, true);
-                    ((ImageView) getActivity().findViewById(R.id.playerBg)).setImageBitmap(blurredBitmap);
-                } catch (Exception e) {
-                    Log.e("NOT FOUND", e.getMessage());
-                }
-            }
-        });
-    }
-
-    /**
-     * Applies blur using RenderScript for better performance
-     * @param radius - blur radius to apply
-     */
-    private void applyBlur(float radius, Bitmap bitmap) {
-        RenderScript rs = RenderScript.create(getActivity());
-        // Use this constructor for best performance, because it uses USAGE_SHARED mode which reuses memory
-        final Allocation input = Allocation.createFromBitmap(rs, bitmap);
-        final Allocation output = Allocation.createTyped(rs, input.getType());
-        final ScriptIntrinsicBlur script = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
-        script.setRadius(radius);
-        script.setInput(input);
-        script.forEach(output);
-        output.copyTo(bitmap);
     }
 
     @Override

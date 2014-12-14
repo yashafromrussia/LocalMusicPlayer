@@ -4,14 +4,31 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.MediaStore;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
+import android.support.v8.renderscript.Allocation;
+import android.support.v8.renderscript.Element;
+import android.support.v8.renderscript.RenderScript;
+import android.support.v8.renderscript.ScriptIntrinsicBlur;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+
+import com.joanzapata.android.iconify.IconDrawable;
+import com.joanzapata.android.iconify.Iconify;
+import com.shamanland.fab.FloatingActionButton;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
 
@@ -40,6 +57,8 @@ public class StartActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
+        setSupportActionBar((Toolbar) findViewById(R.id.main_toolbar));
+
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
@@ -49,6 +68,48 @@ public class StartActivity extends ActionBarActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.playBtn);
+        fab.setImageDrawable(new IconDrawable(this, Iconify.IconValue.fa_play_circle)
+                .colorRes(R.color.white));
+
+        final SlidingUpPanelLayout slidingUpPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+        View dragPanel = findViewById(R.id.dragPanel);
+        final TransitionDrawable transition = (TransitionDrawable) dragPanel.getBackground();
+        transition.startTransition(1);
+        slidingUpPanel.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            Boolean panelExpanded = false;
+            @Override
+            public void onPanelSlide(View view, float v) {
+
+            }
+
+            @Override
+            public void onPanelCollapsed(View view) {
+                if (panelExpanded) {
+                    panelExpanded = false;
+                    transition.startTransition(300);
+                }
+            }
+
+            @Override
+            public void onPanelExpanded(View view) {
+                if (!panelExpanded) {
+                    panelExpanded = true;
+                    transition.reverseTransition(300);
+                }
+            }
+
+            @Override
+            public void onPanelAnchored(View view) {
+
+            }
+
+            @Override
+            public void onPanelHidden(View view) {
+
+            }
+        });
     }
 
     // Connect to the service
@@ -64,7 +125,29 @@ public class StartActivity extends ActionBarActivity
             musicBound = true;
 
             // Initialize interfaces
-            currentFragment.setOnSongChangedListener();
+            musicService.setOnSongChangedListener(new MusicService.OnSongChangedListener() {
+                @Override
+                public void onSongChanged(Song song) {
+                    Bitmap bitmap;
+                    ImageView artworkView = (ImageView) findViewById(R.id.playerArtwork);
+                    try {
+                        bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), song.getArtwork());
+                        artworkView.setImageBitmap(bitmap);
+
+                        Bitmap blurredBitmap = bitmap.copy(bitmap.getConfig(), true);
+
+                        applyBlur(25f, blurredBitmap);
+
+                        // Scale the bitmap
+                        Matrix matrix = new Matrix();
+                        matrix.postScale(3f, 3f);
+                        blurredBitmap = Bitmap.createBitmap(blurredBitmap, 0, 0, blurredBitmap.getWidth(), blurredBitmap.getHeight(), matrix, true);
+                        ((ImageView) findViewById(R.id.playerBg)).setImageBitmap(blurredBitmap);
+                    } catch (Exception e) {
+                        Log.e("NOT FOUND", e.getMessage());
+                    }
+                }
+            });
         }
 
         @Override
@@ -72,6 +155,22 @@ public class StartActivity extends ActionBarActivity
             musicBound = false;
         }
     };
+
+    /**
+     * Applies blur using RenderScript for better performance
+     * @param radius - blur radius to apply
+     */
+    private void applyBlur(float radius, Bitmap bitmap) {
+        RenderScript rs = RenderScript.create(this);
+        // Use this constructor for best performance, because it uses USAGE_SHARED mode which reuses memory
+        final Allocation input = Allocation.createFromBitmap(rs, bitmap);
+        final Allocation output = Allocation.createTyped(rs, input.getType());
+        final ScriptIntrinsicBlur script = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
+        script.setRadius(radius);
+        script.setInput(input);
+        script.forEach(output);
+        output.copyTo(bitmap);
+    }
 
     @Override
     protected void onStart() {
