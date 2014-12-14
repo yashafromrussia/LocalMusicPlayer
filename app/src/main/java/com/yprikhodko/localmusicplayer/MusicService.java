@@ -16,7 +16,8 @@ import android.widget.SeekBar;
 import java.util.ArrayList;
 
 /**
- * Created by yasha on 12/12/14.
+ * Responsible for music playback. This is the main controller that handles all user actions
+ * regarding song playback
  */
 public class MusicService extends Service implements
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
@@ -116,6 +117,10 @@ public class MusicService extends Service implements
     }
 
 
+    /**
+     * Sets a new song to buffer
+     * @param songIndex - position of the song in the array
+     */
     public void setSong(int songIndex){
         songPos = songIndex;
         playerState = STOPPED;
@@ -168,11 +173,16 @@ public class MusicService extends Service implements
         public void onSongChanged(Song song);
         public void onPlayerStatusChanged(int status);
     }
+
     // Sets a callback to execute when we switch songs.. ie: update UI
     public void setOnSongChangedListener(OnSongChangedListener listener) {
         onSongChangedListener = listener;
     }
 
+    /**
+     * Sets seekBar to control while playing music
+     * @param seekBar - Seek bar instance that's already on our UI thread
+     */
     public void setSeekBar(SeekBar seekBar) {
         mSeekBar = seekBar;
 
