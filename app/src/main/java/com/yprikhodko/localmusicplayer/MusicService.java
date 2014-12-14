@@ -104,7 +104,10 @@ public class MusicService extends Service implements
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        setSong(songPos + 1);
+        int newPos = songPos + 1;
+        if (newPos == songs.size())
+            newPos = 0;
+        setSong(newPos);
         togglePlay();
     }
 
