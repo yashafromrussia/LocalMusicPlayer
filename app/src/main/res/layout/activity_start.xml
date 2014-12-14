@@ -29,6 +29,7 @@
                 android:layout_width="match_parent" />
 
             <!-- A DrawerLayout is intended to be used as the top-level content view using match_parent for both width and height to consume the full space available. -->
+
             <android.support.v4.widget.DrawerLayout
                 android:id="@+id/drawer_layout"
                 android:layout_width="match_parent"
@@ -63,15 +64,8 @@
             android:id="@+id/dragView">
 
             <include layout="@layout/fragment_media_player"/>
+            <include layout="@layout/fragment_drag_panel"/>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="68dp"
-                android:orientation="horizontal"
-                android:id="@+id/dragPanel"
-                android:background="@anim/bg_grey_glass">
-
-            </LinearLayout>
         </FrameLayout>
 
     </com.sothree.slidinguppanel.SlidingUpPanelLayout>

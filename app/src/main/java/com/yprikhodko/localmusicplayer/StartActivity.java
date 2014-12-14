@@ -24,6 +24,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.joanzapata.android.iconify.IconDrawable;
 import com.joanzapata.android.iconify.Iconify;
@@ -80,6 +81,11 @@ public class StartActivity extends ActionBarActivity
         transition.startTransition(1);
         slidingUpPanel.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             Boolean panelExpanded = false;
+            ImageView previewArtworkView = (ImageView) findViewById(R.id.previewArtwork);
+            ImageView backBtn = (ImageView) findViewById(R.id.backBtn);
+            TextView previewSongTitle = (TextView) findViewById(R.id.previewSongTitle);
+            TextView previewSongArtist = (TextView) findViewById(R.id.previewSongArtist);
+            View previewPlayBtn = findViewById(R.id.previewPlayBtn);
             @Override
             public void onPanelSlide(View view, float v) {}
 
@@ -89,6 +95,11 @@ public class StartActivity extends ActionBarActivity
                 if (panelExpanded) {
                     panelExpanded = false;
                     transition.startTransition(300);
+                    previewArtworkView.setVisibility(View.VISIBLE);
+                    previewSongArtist.setVisibility(View.VISIBLE);
+                    previewSongTitle.setVisibility(View.VISIBLE);
+                    previewPlayBtn.setVisibility(View.VISIBLE);
+                    backBtn.setVisibility(View.INVISIBLE);
                 }
             }
 
@@ -98,6 +109,11 @@ public class StartActivity extends ActionBarActivity
                 if (!panelExpanded) {
                     panelExpanded = true;
                     transition.reverseTransition(300);
+                    previewArtworkView.setVisibility(View.INVISIBLE);
+                    previewSongArtist.setVisibility(View.INVISIBLE);
+                    previewSongTitle.setVisibility(View.INVISIBLE);
+                    previewPlayBtn.setVisibility(View.INVISIBLE);
+                    backBtn.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -123,26 +139,28 @@ public class StartActivity extends ActionBarActivity
 
             // Initialize interfaces
             musicService.setOnSongChangedListener(new MusicService.OnSongChangedListener() {
+                ImageView artworkView = (ImageView) findViewById(R.id.playerArtwork);
+                ImageView previewArtworkView = (ImageView) findViewById(R.id.previewArtwork);
+                TextView previewSongTitle = (TextView) findViewById(R.id.previewSongTitle);
+                TextView previewSongArtist = (TextView) findViewById(R.id.previewSongArtist);
                 @Override
                 public void onSongChanged(Song song) {
                     Bitmap bitmap;
-                    ImageView artworkView = (ImageView) findViewById(R.id.playerArtwork);
-                    try {
-                        bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), song.getArtwork());
-                        artworkView.setImageBitmap(bitmap);
+                    previewSongTitle.setText(song.getTitle());
+                    previewSongArtist.setText(song.getArtist());
+                    bitmap = song.getArtworkBitmap(getApplicationContext());
+                    artworkView.setImageBitmap(bitmap);
+                    previewArtworkView.setImageBitmap(bitmap);
 
-                        Bitmap blurredBitmap = bitmap.copy(bitmap.getConfig(), true);
+                    Bitmap blurredBitmap = bitmap.copy(bitmap.getConfig(), true);
 
-                        applyBlur(25f, blurredBitmap);
+                    applyBlur(25f, blurredBitmap);
 
-                        // Scale the bitmap
-                        Matrix matrix = new Matrix();
-                        matrix.postScale(3f, 3f);
-                        blurredBitmap = Bitmap.createBitmap(blurredBitmap, 0, 0, blurredBitmap.getWidth(), blurredBitmap.getHeight(), matrix, true);
-                        ((ImageView) findViewById(R.id.playerBg)).setImageBitmap(blurredBitmap);
-                    } catch (Exception e) {
-                        Log.e("NOT FOUND", e.getMessage());
-                    }
+                    // Scale the bitmap
+                    Matrix matrix = new Matrix();
+                    matrix.postScale(3f, 3f);
+                    blurredBitmap = Bitmap.createBitmap(blurredBitmap, 0, 0, blurredBitmap.getWidth(), blurredBitmap.getHeight(), matrix, true);
+                    ((ImageView) findViewById(R.id.playerBg)).setImageBitmap(blurredBitmap);
                 }
             });
         }

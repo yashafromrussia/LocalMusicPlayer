@@ -122,4 +122,8 @@ public class MusicService extends Service implements
     public void setOnSongChangedListener(OnSongChangedListener listener) {
         onSongChangedListener = listener;
     }
+
+    public Song getCurrentSong() {
+        return songs.get(songPos);
+    }
 }

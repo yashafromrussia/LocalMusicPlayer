@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="68dp"
+    android:id="@+id/dragPanel"
+    android:background="@anim/bg_grey_glass"
+    android:padding="10dp">
+
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:id="@+id/backBtn"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/abc_ic_ab_back_mtrl_am_alpha"
+            android:visibility="invisible" />
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:id="@+id/previewArtwork"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:layout_centerVertical="true" />
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_toEndOf="@id/previewArtwork"
+            android:layout_centerVertical="true">
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="85">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Medium Text"
+                    android:id="@+id/previewSongTitle"
+                    android:layout_marginLeft="5dp"
+                    android:singleLine="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Small Text"
+                    android:id="@+id/previewSongArtist"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="5dp"
+                    android:singleLine="true" />
+            </LinearLayout>
+
+            <IconTextView
+                android:text="{fa-play}"
+                android:shadowColor="#22000000"
+                android:shadowDx="3"
+                android:shadowDy="3"
+                android:shadowRadius="1"
+                android:textSize="40sp"
+                android:layout_marginStart="5dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="15"
+                android:id="@+id/previewPlayBtn"
+                android:textColor="@color/dark"
+                android:layout_gravity="center_vertical" />
+        </LinearLayout>
+
+</RelativeLayout>
